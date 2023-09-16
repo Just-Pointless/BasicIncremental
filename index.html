@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+    <title>Basic Incremental</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="main.js"></script>
+    <script src="break_eternity.js"></script>
+    <link rel="stylesheet" href="css.css">
+</head>
+<body>
+    <div id="MenuButtons" class="MenuButtons">
+        <button id="GeneratorsMenu">Generators</button>
+        <button id="UpgradesMenu" hidden>Upgrades</button>
+        <button id="OptionsMenu">Options</button>        
+    </div>
+    <div class="stats">
+        <p id="points">Points: 0</p>
+        <p id="pps" style="margin-bottom:40px" hidden>Points Per Second: 0</p>
+    </div>
+    <div id="Menus">
+        <div id="Generators">
+            <button id="BuyGen1">Buy a generator (10 Points)</button>
+        </div>
+        <div id="Options" hidden>
+            <button id="ThemeChange">Dark</button>
+            <p id="playtime">Something</p>
+            <p id="tpscount">Something</p>
+        </div>
+        <div id="Upgrades" class="Upgrades" hidden>
+            <button display:block id="PUPG_DoublePoints">Double Point Gain (100 Points)</button>
+        </div>
+    </div>
+</body>
