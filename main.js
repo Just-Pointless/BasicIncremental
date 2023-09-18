@@ -25,13 +25,17 @@ function setup() {
     var playtime = 0
     var tps = 0
     var currenttps = 0
-    var genprices = {'Gen1': new Decimal(10)}
-    var theme = "white"
-    var PUpgrades = {'PUPG_DoublePoints': function(){pointsmulti = Decimal.multiply(pointsmulti,2)}}
-    var PUpgradesPrices = {'PUPG_DoublePoints': new Decimal(100)}
+    var genprices = {'Gen1': new Decimal(10), 'Gen2': new Decimal(200)}
+    var theme = "black"
+    var PUpgrades = {
+        'PUPG_DoublePoints': function(){pointsmulti = Decimal.multiply(pointsmulti,2)},
+        'PUPG_Gen2': function(){document.getElementById("BuyGen2").style.display = "inline";document.getElementById("Gen2Count").style.display = "inline"}
+    }
+    var PUpgradesPrices = {'PUPG_DoublePoints': new Decimal(100),'PUPG_Gen2': new Decimal(400)}
     var BoughtPUpgrades = []
     var pointsmulti = new Decimal(1)
-    var gen1count = 0
+    var gen1count = new Decimal(0)
+    var gen2count = new Decimal(0)
     function calcgain(stattype) {
         if (stattype == "points") {
             return Decimal.multiply(gen1count, pointsmulti)
@@ -40,8 +44,11 @@ function setup() {
     setInterval(function(){
         tps += 1
         points = points.add(Decimal.divide(calcgain("points"),30))
+        gen1count = gen1count.add(gen2count.divide(90))
         $("#points").html("Points: " + Decimal.round(points) + " (" + Decimal.round(calcgain("points")) + "/s)")
         //$("#pps").html("Points Per Second: " + Decimal.round(pps))
+        $("#Gen1Count").html(String(Decimal.round(gen1count)))
+        $("#Gen2Count").html(String(Decimal.round(gen2count)))
     }, 33.33)
     setInterval(function(){
         playtime += 1
@@ -57,8 +64,16 @@ function setup() {
         if (Decimal.compare(points, genprices['Gen1']) >= 0){
             points = Decimal.sub(points, genprices['Gen1'])
             genprices['Gen1'] = Decimal.multiply(genprices['Gen1'],1.1)
-            gen1count += 1
+            gen1count = gen1count.add(1)
             $("#BuyGen1").html("Buy a generator (" + Decimal.round(genprices['Gen1']) + " Points)")
+        }
+    })
+    $("#BuyGen2").click(function(){
+        if (Decimal.compare(points, genprices['Gen2']) >= 0){
+            points = Decimal.sub(points, genprices['Gen2'])
+            genprices['Gen2'] = Decimal.multiply(genprices['Gen2'],1.1)
+            gen2count = gen2count.add(1)
+            $("#BuyGen2").html("Buy a tier 2 generator (" + Decimal.round(genprices['Gen2']) + " Points)")
         }
     })
     var divs2 = document.getElementById("MenuButtons").getElementsByTagName('button')
@@ -97,6 +112,12 @@ function setup() {
             }
         })
     }
+    document.body.style.backgroundColor = "black"
+    textobjects = document.getElementsByTagName('p')
+    for (var i = 0; i < textobjects.length; i += 1) {
+        textobjects[i].style.color = "white"
+    }
+    $("#ThemeChange").html("Light")
 }
 window.addEventListener('load', function () {
     setup()
