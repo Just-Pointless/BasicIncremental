@@ -25,17 +25,24 @@ function setup() {
     var playtime = 0
     var tps = 0
     var currenttps = 0
-    var genprices = {'Gen1': new Decimal(10), 'Gen2': new Decimal(200)}
+    var genprices = {'Gen1': new Decimal(10), 'Gen2': new Decimal(200), 'Gen3': new Decimal(2500)}
     var theme = "black"
     var PUpgrades = {
         'PUPG_DoublePoints': function(){pointsmulti = Decimal.multiply(pointsmulti,2)},
-        'PUPG_Gen2': function(){document.getElementById("BuyGen2").style.display = "inline";document.getElementById("Gen2Count").style.display = "inline"}
+        'PUPG_Gen2': function(){document.getElementById("BuyGen2").style.display = "inline";document.getElementById("Gen2Count").style.display = "inline"},
+        'PUPG_Gen3': function(){document.getElementById("BuyGen3").style.display = "inline";document.getElementById("Gen3Count").style.display = "inline"},
+        'PUPG_DoubleGen': function(){genmultis['Gen2'] = genmultis['Gen2'].multiply(2);genmultis['Gen3'] = genmultis['Gen3'].multiply(2);pointsmulti = pointsmulti.multiply(2)}
     }
-    var PUpgradesPrices = {'PUPG_DoublePoints': new Decimal(100),'PUPG_Gen2': new Decimal(400)}
+    var PUpgradesPrices = {'PUPG_DoublePoints': new Decimal(100),'PUPG_Gen2': new Decimal(400),'PUPG_Gen3': new Decimal(5000),'PUPG_DoubleGen': new Decimal(30000)}
     var BoughtPUpgrades = []
     var pointsmulti = new Decimal(1)
     var gen1count = new Decimal(0)
     var gen2count = new Decimal(0)
+    var gen3count = new Decimal(0)
+    var genmultis = {
+        'Gen2': new Decimal(1),
+        'Gen3': new Decimal(1)
+    }
     function calcgain(stattype) {
         if (stattype == "points") {
             return Decimal.multiply(gen1count, pointsmulti)
@@ -44,11 +51,13 @@ function setup() {
     setInterval(function(){
         tps += 1
         points = points.add(Decimal.divide(calcgain("points"),30))
-        gen1count = gen1count.add(gen2count.divide(90))
+        gen1count = gen1count.add(gen2count.divide(90).multiply(genmultis['Gen2']))
+        gen2count = gen2count.add(gen3count.divide(90).multiply(genmultis['Gen3']))
         $("#points").html("Points: " + Decimal.round(points) + " (" + Decimal.round(calcgain("points")) + "/s)")
         //$("#pps").html("Points Per Second: " + Decimal.round(pps))
         $("#Gen1Count").html(String(Decimal.round(gen1count)))
         $("#Gen2Count").html(String(Decimal.round(gen2count)))
+        $("#Gen3Count").html(String(Decimal.round(gen3count)))
     }, 33.33)
     setInterval(function(){
         playtime += 1
@@ -74,6 +83,14 @@ function setup() {
             genprices['Gen2'] = Decimal.multiply(genprices['Gen2'],1.1)
             gen2count = gen2count.add(1)
             $("#BuyGen2").html("Buy a tier 2 generator (" + Decimal.round(genprices['Gen2']) + " Points)")
+        }
+    })
+    $("#BuyGen3").click(function(){
+        if (Decimal.compare(points, genprices['Gen3']) >= 0){
+            points = Decimal.sub(points, genprices['Gen3'])
+            genprices['Gen3'] = Decimal.multiply(genprices['Gen3'],1.1)
+            gen3count = gen3count.add(1)
+            $("#BuyGen3").html("Buy a tier 3 generator (" + Decimal.round(genprices['Gen3']) + " Points)")
         }
     })
     var divs2 = document.getElementById("MenuButtons").getElementsByTagName('button')
